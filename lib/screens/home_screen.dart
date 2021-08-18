@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/models/note.dart';
+import 'package:note_app/screens/note_datails_screen.dart';
 import 'package:note_app/widgets/note_item.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,13 +13,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    notes = List.generate(
-        20,
-        (index) => Note(
-            id: DateTime.now().toIso8601String(),
-            title: 'Lorem ipsum dolor',
-            description:
-                "Ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim."));
+    // notes = List.generate(
+    //     20,
+    //     (index) => Note(
+    //         id: DateTime.now().toIso8601String(),
+    //         title: 'Lorem ipsum dolor',
+    //         description:
+    //             "Ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim."));
+
+    notes = [];
   }
 
   @override
@@ -32,11 +35,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [IconButton(icon: Icon(Icons.search), onPressed: () {})],
       ),
       floatingActionButton: FloatingActionButton(
-        
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => NoteDetailsScreen(
+                    addFunction: addNewNote,
+                  )));
+        },
         child: Icon(Icons.add),
       ),
-      
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -47,8 +53,33 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSpacing: 8,
             ),
             itemCount: notes.length,
-            itemBuilder: (context, index) => NoteItem(noteItem: notes[index])),
+            itemBuilder: (context, index) => NoteItem(
+                  noteItem: notes[index],
+                  editeNote: editNote,
+                  removeNote: removeNote,
+                )),
       ),
     );
+  }
+
+  void addNewNote(Note newNote) {
+    setState(() {
+      notes.add(newNote);
+    });
+  }
+
+  void editNote(String id, String title, String description) {
+    //! [ , ,2, , , ]
+    int indexOfEditNote = notes.indexWhere((note) => note.id == id);
+    Note newNote = Note(id: id, title: title, description: description);
+    setState(() {
+      notes[indexOfEditNote] = newNote;
+    });
+  }
+
+  void removeNote(String id) {
+    setState(() {
+      notes.removeWhere((note) => note.id == id);
+    });
   }
 }
